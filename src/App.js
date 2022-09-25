@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { elements } from './quimic-elements';
 
 
 function Tabla({ mipropiedad }) {
@@ -18,9 +19,9 @@ function Tabla({ mipropiedad }) {
         <tbody>
           {mipropiedad.map((fila, key) => {
             return (
-              <tr key={key}>
-                <td className="border border-slate-700  px-2">{fila.Number}</td>
-                <td className="border border-slate-700  px-2">{fila.atomo}</td>
+              <tr key={fila.id}>
+                <td className="border border-slate-700  px-2">{fila.numero}</td>
+                <td className="border border-slate-700  px-2">{fila.letra}</td>
                 <td className="border border-slate-700  px-2">{fila.masamolecular}</td>
                 <td className="border border-slate-700  px-2">{fila.masatotal}</td>
                 <td className="border border-slate-700  px-2">{fila.masasubtotal}</td>
@@ -35,30 +36,53 @@ function Tabla({ mipropiedad }) {
 
 
 export default function List() {
-  const [name, setName] = useState('');
-  const [input, setInput] = useState([{ id: Date.now, letra: '', numero: 1 }]);
+  const [totalMass, setTotalMass] = useState(0);
+  const [input, setInput] = useState([{ id: Date.now(), letra: '', numero: 1 }]);
 
   const [formula, setFormula] = useState([]);
 
 
-  function handleClick() {
-    setName('')
-    setFormula(stated => {
-      return [
-        ...stated, {
-          id: Date.now(),
-          letra: '',
-          numero: 1,
-          Number: 1,
-          atomo: name,
-          masamolecular: 2,
-          masatotal: 23,
-          masasubtotal: 25
-        }]
-    })
+  function calculateMolecularMass() {
+    try {
+      const formulaResult = []
+
+      input.forEach(singleInput => {
+        const elementFinded = elements.find(element => element.symbol === singleInput.letra)
+        if (!elementFinded) {
+          throw new Error(`No se encontro el elemento ${singleInput.letra}`)
+        }
+        const singleInputAtomicNumber = parseInt(singleInput.numero)
+        if (isNaN(singleInputAtomicNumber)) {
+          throw new Error(`No es un numero atomico valido ${singleInput.numero}`)
+        }
+
+        formulaResult.push({
+            id: singleInput.id,
+            letra: singleInput.letra,
+            numero: singleInput.numero,
+            masamolecular: elementFinded.atomic_mass,
+            masatotal: 23,
+            masasubtotal: singleInputAtomicNumber * elementFinded.atomic_mass
+        })
+      })
+
+      const totalMass = formulaResult.reduce((previusSum, singleResult) => {
+        return previusSum + singleResult.masasubtotal
+      }, 0)
+
+      formulaResult.forEach(singleResult => {
+        singleResult.masatotal = (singleResult.masasubtotal / totalMass) * 100
+      })
+
+  
+      setTotalMass(totalMass)
+      setFormula(formulaResult)
+    } catch (error) {
+      alert(error.message)
+    }
   }
 
-  function handleinputClick() {
+  function addInputEmpty() {
     setInput(valor => {
       return [
         ...valor, {
@@ -91,7 +115,7 @@ export default function List() {
 
           <div className='text-lg mr-4'>Formula Quimica: </div>
 
-          <div const inputt className='flex  '> {input.map((valores) => {
+          <div className='flex  '> {input.map((valores) => {
             return (
               <div key={valores.id} className="flex  pt-4 mr-1 ">
                 <div >
@@ -134,7 +158,7 @@ export default function List() {
           <div >
             <button
               className=' bg-sky-400 rounded-full  hover:bg-sky-500 mr-4 w-[20px] h-[20px] leading-none'
-              onClick={handleinputClick}
+              onClick={addInputEmpty}
             >+
             </button>
           </div>
@@ -142,7 +166,7 @@ export default function List() {
           <div >
             <button
               className='mt-1 ml-1 bg-sky-400 rounded-lg  px-3 hover:bg-sky-500 w-20 mr-4 '
-              onClick={handleClick}
+              onClick={calculateMolecularMass}
             >Calcular</button>
           </div>
 
@@ -162,9 +186,8 @@ export default function List() {
 
         <div className='font-serif text-lg mr-60'>Total de Masa Molecular </div>
         <div >
-          <input className='rounded-md focus-visible:outline-none w-28   relative'
-            value={name}
-            onChange={e => setName(e.target.value)}></input>
+          <input disabled className='rounded-md focus-visible:outline-none w-28   relative'
+            value={totalMass} ></input>
         </div>
       </div>
     </div>
