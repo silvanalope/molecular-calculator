@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/static/css/main.41e18fcf.css",
-    "main.js": "/static/js/main.d5fe9834.js",
-    "index.html": "/index.html",
-    "main.41e18fcf.css.map": "/static/css/main.41e18fcf.css.map",
-    "main.d5fe9834.js.map": "/static/js/main.d5fe9834.js.map"
+    "main.css": "/molecular-calculator/static/css/main.41e18fcf.css",
+    "main.js": "/molecular-calculator/static/js/main.d5fe9834.js",
+    "index.html": "/molecular-calculator/index.html",
+    "main.41e18fcf.css.map": "/molecular-calculator/static/css/main.41e18fcf.css.map",
+    "main.d5fe9834.js.map": "/molecular-calculator/static/js/main.d5fe9834.js.map"
   },
   "entrypoints": [
     "static/css/main.41e18fcf.css",
